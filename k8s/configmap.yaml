@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: fullstack-app
+data:
+  APP_ENV: "prod"
+  DATABASE_URL: "mysql://app:secret@mysql-service:3306/app_db?serverVersion=8.0&charset=utf8mb4"
+  CORS_ALLOW_ORIGIN: "^https?://(.*\.)?yourdomain\.com$"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+  namespace: fullstack-app
+type: Opaque
+data:
+  APP_SECRET: eW91ci1zZWNyZXQta2V5LWhlcmUtY2hhbmdlLWluLXByb2R1Y3Rpb24=  # base64 encoded
+  MYSQL_ROOT_PASSWORD: cm9vdHBhc3N3b3Jk  # base64 encoded "rootpassword"
+  MYSQL_PASSWORD: c2VjcmV0  # base64 encoded "secret"
+  JWT_PASSPHRASE: eW91ci1qd3QtcGFzc3BocmFzZQ==  # base64 encoded

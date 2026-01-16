@@ -1,0 +1,39 @@
+{
+  "name": "fullstack-vue-symfony",
+  "version": "1.0.0",
+  "description": "Complete full-stack development environment with Vue.js, Symfony 6, Docker, and Kubernetes",
+  "main": "index.js",
+  "scripts": {
+    "setup": "./scripts/setup.sh",
+    "fresh-start": "./scripts/fresh-start.sh",
+    "dev": "./scripts/setup.sh",
+    "restart": "./scripts/restart.sh",
+    "cleanup": "./scripts/cleanup.sh",
+    "deploy": "./scripts/deploy-k8s.sh",
+    "build": "docker-compose build",
+    "up": "docker-compose up -d",
+    "down": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "backend:install": "cd backend && composer install",
+    "backend:migrate": "docker-compose exec backend php bin/console doctrine:migrations:migrate",
+    "backend:cache-clear": "docker-compose exec backend php bin/console cache:clear",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "vue",
+    "symfony",
+    "docker",
+    "kubernetes",
+    "fullstack",
+    "typescript",
+    "php"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/fullstack-vue-symfony.git"
+  }
+}

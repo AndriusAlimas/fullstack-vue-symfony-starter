@@ -1,0 +1,49 @@
+# Backend Dockerfile
+FROM php:8.2-fpm-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    git \
+    unzip \
+    curl \
+    oniguruma-dev \
+    libzip-dev \
+    mysql-client \
+    nginx
+
+# Install PHP extensions
+RUN docker-php-ext-install \
+    pdo_mysql \
+    zip \
+    opcache
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy composer files
+COPY backend/composer*.json ./
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Copy application code
+COPY backend/ ./
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/var
+
+# Copy PHP and Nginx configuration
+COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY docker/nginx-backend.conf /etc/nginx/http.d/default.conf
+
+# Create startup script
+COPY docker/start-backend.sh /usr/local/bin/start-backend.sh
+RUN chmod +x /usr/local/bin/start-backend.sh
+
+EXPOSE 8000
+
+CMD ["/usr/local/bin/start-backend.sh"]
