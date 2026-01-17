@@ -12,8 +12,8 @@ Perfect starter template for modern full-stack applications with enterprise-grad
 ## ✨ Features
 
 - **🎯 One-Command Setup**: Get everything running with a single command
-- **🏗️ Modern Stack**: Vue.js 3 + JavaScript + Vite + Symfony 6 + PHP 8.2
-- **🐳 Docker Ready**: Complete containerization for development and production
+- **🏗️ Modern Stack**: Vue.js 3 + Vue CLI + Symfony 6 + PHP 8.3
+- **🐳 Docker Ready**: Complete containerization with nginx + PHP-FPM
 - **☸️ Kubernetes Native**: Production-ready K8s manifests with auto-scaling
 - **🔄 Hot Reload**: Live development with instant updates
 - **📊 Health Monitoring**: Built-in health checks and status endpoints
@@ -22,7 +22,7 @@ Perfect starter template for modern full-stack applications with enterprise-grad
 ## 🏗️ Project Structure
 
 ```
-├── 📁 frontend/              # Vue.js 3 + JavaScript + Vite
+├── 📁 frontend/              # Vue.js 3 + Vue CLI
 │   ├── src/
 │   │   ├── components/
 │   │   ├── views/
@@ -40,17 +40,18 @@ Perfect starter template for modern full-stack applications with enterprise-grad
 ├── 📁 docker/                # Docker configuration
 │   ├── Dockerfile.frontend
 │   ├── Dockerfile.backend
-│   └── nginx.conf
+│   ├── nginx.conf
+│   └── nginx-backend.conf
 ├── 📁 k8s/                   # Kubernetes manifests
 │   ├── namespace.yaml
 │   ├── backend.yaml
 │   ├── frontend.yaml
 │   └── ingress.yaml
 ├── 📁 scripts/               # Automation scripts
-│   ├── setup.sh
-│   ├── fresh-start.sh
-│   ├── restart.sh
-│   └── cleanup.sh
+│   ├── setup.js
+│   ├── fresh-start.js
+│   ├── restart.js
+│   └── cleanup.js
 └── docker-compose.yml        # Development environment
 ```
 
@@ -67,7 +68,7 @@ Perfect starter template for modern full-stack applications with enterprise-grad
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd <project-directory>
+cd fullstack-vue-symfony-starter
 
 # Fresh start - builds everything from scratch
 npm run fresh-start
@@ -80,17 +81,19 @@ That's it! 🎉 Your complete development environment is ready!
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000/api
 - **Health Check**: http://localhost:8000/api/health
+- **Status Check**: http://localhost:8000/api/status
 - **Database**: localhost:3306 (user: app, password: secret)
+- **Redis**: localhost:6379
 
 ## 📋 Available Commands
 
 ### Development Commands
 
 ```bash
-npm run dev         # Start development environment
+npm run dev         # Same as setup - start development environment
 npm run setup       # Initial setup (install dependencies & start)
 npm run restart     # Restart all services
-npm run fresh-start # Complete clean slate setup
+npm run fresh-start # Complete clean slate setup (recommended)
 npm run cleanup     # Stop and remove all containers
 ```
 
@@ -126,15 +129,16 @@ npm run deploy      # Deploy to Kubernetes cluster
 
 The development environment uses Docker Compose with the following services:
 
-- **Frontend**: Vue.js app with Vite dev server
-- **Backend**: Symfony 6 with PHP-FPM and Nginx
+- **Frontend**: Vue.js 3 app served via nginx (production-like setup)
+- **Backend**: Symfony 6 with PHP 8.3-FPM and nginx
 - **Database**: MySQL 8.0 with persistent storage
-- **Redis**: Caching layer (optional)
+- **Redis**: Caching layer for sessions and data
 
-### Development vs Production
+### Architecture
 
-- **Development**: Hot reload, source maps, debug mode
-- **Production**: Optimized builds, multi-stage containers, health checks
+- **Production-Ready Setup**: Uses nginx + PHP-FPM for better performance
+- **Health Monitoring**: Built-in health checks at `/api/health` and `/api/status`
+- **Optimized Builds**: Multi-stage Docker builds for smaller images
 
 ## ☸️ Kubernetes Deployment
 
@@ -174,12 +178,12 @@ DATABASE_URL=mysql://app:secret@database:3306/app_db
 CORS_ALLOW_ORIGIN=^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$
 ```
 
-#### Frontend (vite.config.ts)
+#### Frontend (vite.config.js)
 
-```typescript
+```javascript
 server: {
   host: '0.0.0.0',
-  port: 3000,
+  port: 8080,
   proxy: {
     '/api': 'http://backend:8000'
   }
@@ -231,21 +235,37 @@ npm run backend:migrate
 **Containers not starting?**
 
 ```bash
-# Check logs
-docker-compose logs
+# Check logs for specific service
+docker-compose logs backend
+docker-compose logs frontend
 
 # Restart with fresh build
 npm run fresh-start
+
+# Check running containers
+docker-compose ps
 ```
 
 **Port conflicts?**
 
 ```bash
-# Check what's using the port
-netstat -an | grep :3000
-lsof -i :3000
+# Check what's using the port (Windows)
+netstat -ano | findstr :3000
+netstat -ano | findstr :8000
 
-# Stop conflicting services
+# Or on Linux/Mac
+lsof -i :3000
+lsof -i :8000
+```
+
+**Backend API returning 404?**
+
+```bash
+# Check if routes are registered correctly
+docker-compose exec backend php bin/console debug:router
+
+# Verify backend is healthy
+curl http://localhost:8000/api/health
 ```
 
 **Database connection issues?**
@@ -259,10 +279,17 @@ npm run fresh-start
 ### Health Checks
 
 ```bash
-# Check all services
+# Check backend API health
 curl http://localhost:8000/api/health
+
+# Check backend API status
 curl http://localhost:8000/api/status
+
+# Check frontend application
 curl http://localhost:3000
+
+# Check container status
+docker-compose ps
 ```
 
 ## 📊 Monitoring & Logging
@@ -321,6 +348,11 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ### 📝 Notes
 
+- The setup uses **production-like configuration** with nginx + PHP-FPM for better performance
+- Backend runs on **PHP 8.3** with **Symfony 6.4**
+- Frontend uses **Vue.js 3** with **Vue CLI** (not Vite)
+- All containers are optimized with multi-stage builds
+- **Database migrations** are handled manually for flexibility
 - Replace `your-registry` with your actual Docker registry
 - Update domain names in Kubernetes ingress
 - Customize configurations for your specific needs

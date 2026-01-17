@@ -4,12 +4,12 @@
   "description": "Complete full-stack development environment with Vue.js, Symfony 6, Docker, and Kubernetes",
   "main": "index.js",
   "scripts": {
-    "setup": "./scripts/setup.sh",
-    "fresh-start": "./scripts/fresh-start.sh",
-    "dev": "./scripts/setup.sh",
-    "restart": "./scripts/restart.sh",
-    "cleanup": "./scripts/cleanup.sh",
-    "deploy": "./scripts/deploy-k8s.sh",
+    "setup": "node scripts/setup.js",
+    "fresh-start": "node scripts/fresh-start.js",
+    "dev": "node scripts/setup.js",
+    "restart": "node scripts/restart.js",
+    "cleanup": "node scripts/cleanup.js",
+    "deploy": "node scripts/deploy-k8s.js",
     "build": "docker-compose build",
     "up": "docker-compose up -d",
     "down": "docker-compose down",
@@ -30,7 +30,7 @@
     "typescript",
     "php"
   ],
-  "author": "Your Name",
+  "author": "Andrius",
   "license": "MIT",
   "repository": {
     "type": "git",
