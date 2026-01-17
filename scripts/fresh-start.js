@@ -140,6 +140,20 @@ async function main() {
   removeIfExists(path.join("backend", "var", "cache"), "Cleared backend cache");
   removeIfExists(path.join("backend", "var", "log"), "Cleared backend logs");
 
+  // Set up backend environment
+  log("Setting up backend environment...");
+  const backendEnvPath = path.join("backend", ".env");
+  const backendEnvExamplePath = path.join("backend", ".env.example");
+  
+  if (!fs.existsSync(backendEnvPath) && fs.existsSync(backendEnvExamplePath)) {
+    try {
+      fs.copyFileSync(backendEnvExamplePath, backendEnvPath);
+      log("Created backend/.env from .env.example");
+    } catch (err) {
+      warn("Could not create backend/.env file automatically");
+    }
+  }
+
   log("✅ Cleanup complete! Starting fresh setup...");
 
   // Install frontend dependencies
@@ -182,13 +196,17 @@ async function main() {
     console.log(
       `\n${colors.green}🎉 Fresh start completed successfully!${colors.reset}`
     );
-    console.log(`${colors.blue}Frontend: http://localhost:3000${colors.reset}`);
+    console.log(`${colors.blue}Frontend: http://localhost:3000 and http://localhost:3001${colors.reset}`);
     console.log(
       `${colors.blue}Backend API: http://localhost:8000/api${colors.reset}`
     );
     console.log(
       `${colors.blue}Health Check: http://localhost:8000/api/health${colors.reset}`
     );
+    console.log(
+      `${colors.blue}Database: MySQL on localhost:3307 (external access)${colors.reset}`
+    );
+    console.log(`${colors.blue}Redis: localhost:6379${colors.reset}`);
   } catch (err) {
     warn(
       "Some services may not have started properly. Check with: docker-compose ps"

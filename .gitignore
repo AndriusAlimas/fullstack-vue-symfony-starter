@@ -30,6 +30,9 @@ vendor/
 .env.test.local
 .env.production.local
 
+# Backend .env is tracked (contains non-secret config)
+!backend/.env
+
 # Build directories
 dist/
 build/

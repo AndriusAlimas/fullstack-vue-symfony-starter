@@ -12,7 +12,7 @@ Perfect starter template for modern full-stack applications with enterprise-grad
 ## ✨ Features
 
 - **🎯 One-Command Setup**: Get everything running with a single command
-- **🏗️ Modern Stack**: Vue.js 3 + Vue CLI + Symfony 6 + PHP 8.3
+- **🏗️ Modern Stack**: Vue.js 3 + Vue CLI + Symfony 6 + PHP 8.4
 - **🐳 Docker Ready**: Complete containerization with nginx + PHP-FPM
 - **☸️ Kubernetes Native**: Production-ready K8s manifests with auto-scaling
 - **🔄 Hot Reload**: Live development with instant updates
@@ -74,15 +74,21 @@ cd fullstack-vue-symfony-starter
 npm run fresh-start
 ```
 
+> **Note:** The fresh-start script will automatically:
+> - Clean up any existing containers and dependencies
+> - Create backend/.env from .env.example template
+> - Install all dependencies and build containers
+> - Start all services with proper configuration
+
 That's it! 🎉 Your complete development environment is ready!
 
 ### 🌐 Access Your Application
 
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:3000 and http://localhost:3001
 - **Backend API**: http://localhost:8000/api
 - **Health Check**: http://localhost:8000/api/health
 - **Status Check**: http://localhost:8000/api/status
-- **Database**: localhost:3306 (user: app, password: secret)
+- **Database**: localhost:3307 (user: app, password: secret) - *External port changed to avoid conflicts*
 - **Redis**: localhost:6379
 
 ## 📋 Available Commands
@@ -172,11 +178,16 @@ kubectl apply -f k8s/
 
 #### Backend (.env)
 
+The fresh-start script automatically creates `backend/.env` from `.env.example`:
+
 ```env
 APP_ENV=dev
-DATABASE_URL=mysql://app:secret@database:3306/app_db
-CORS_ALLOW_ORIGIN=^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$
+APP_SECRET=your-secret-key-here
+DATABASE_URL="mysql://root:password@mysql:3306/app_db?serverVersion=8.0&charset=utf8mb4"
+CORS_ALLOW_ORIGIN=http://localhost:3000,http://localhost:3001
 ```
+
+> **Note**: The DATABASE_URL uses the internal Docker network. External access is available on port 3307.
 
 #### Frontend (vite.config.js)
 
